@@ -1,0 +1,1 @@
+# GeoPilot UI pages
