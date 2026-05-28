@@ -42,3 +42,37 @@ def load_config():
 def save_config(cfg):
     """保存配置到文件"""
     CONFIG_FILE.write_text(json.dumps(cfg, indent=4, ensure_ascii=False), encoding="utf-8")
+
+
+# ---- config presets (configs/ directory) ----
+
+CONFIGS_DIR = Path("configs")
+
+
+def list_config_presets():
+    """列出所有 config 预设文件"""
+    CONFIGS_DIR.mkdir(exist_ok=True)
+    files = sorted(CONFIGS_DIR.glob("*.json"))
+    return [f.stem for f in files]
+
+
+def load_config_preset(name):
+    """加载指定预设文件"""
+    path = CONFIGS_DIR / f"{name}.json"
+    if not path.exists():
+        raise FileNotFoundError(f"预设文件不存在: {name}")
+    return json.loads(path.read_text(encoding="utf-8"))
+
+
+def save_config_preset(name, cfg):
+    """保存到预设文件"""
+    CONFIGS_DIR.mkdir(exist_ok=True)
+    path = CONFIGS_DIR / f"{name}.json"
+    path.write_text(json.dumps(cfg, indent=4, ensure_ascii=False), encoding="utf-8")
+
+
+def delete_config_preset(name):
+    """删除预设文件"""
+    path = CONFIGS_DIR / f"{name}.json"
+    if path.exists():
+        path.unlink()

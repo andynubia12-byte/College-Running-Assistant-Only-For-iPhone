@@ -11,20 +11,23 @@ class LogPage(QWidget):
 
     def _init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setSpacing(8)
+        layout.setSpacing(14)
+        layout.setContentsMargins(18, 18, 18, 18)
 
         top = QHBoxLayout()
+        self.back_btn = QPushButton("← 返回")
+        self.back_btn.setObjectName("backBtn")
+        top.addWidget(self.back_btn)
+        top.addStretch()
+
         title = QLabel("运行日志")
-        title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        title.setObjectName("pageTitle")
         top.addWidget(title)
         top.addStretch()
 
         self.clear_btn = QPushButton("清空")
         self.clear_btn.clicked.connect(self._on_clear)
         top.addWidget(self.clear_btn)
-
-        self.back_btn = QPushButton("返回")
-        top.addWidget(self.back_btn)
         layout.addLayout(top)
 
         self.log_view = QTextEdit()

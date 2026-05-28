@@ -1,12 +1,16 @@
 {
-    "mode": "pace",
-    "loop_count": 10,
     "point_interval": 0.1,
     "jitter_meters": 1.0,
-    "midpoint_probability": 0,
+    "midpoint_probability": 0.0,
+    "loop_count": 10,
+    "mode": "pace",
     "random_walk": {
+        "speed_ms": 3.1,
         "pace_min_per_km": 5.0,
         "duration_seconds": 2500,
+        "direction_change_stddev": 5.0,
+        "ellipse_margin_meters": 2.0,
+        "ellipse_points": 200,
         "corners": {
             "nw": {
                 "lat": 28.73323963,
@@ -24,9 +28,7 @@
                 "lat": 28.73173009,
                 "lng": 115.81351531
             }
-        },
-        "ellipse_margin_meters": 2,
-        "ellipse_points": 200
+        }
     },
     "last_udid": "00008122-001858CC016B801C"
 }

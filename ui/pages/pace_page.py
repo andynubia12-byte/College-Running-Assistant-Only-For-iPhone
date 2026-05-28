@@ -3,7 +3,8 @@ from PySide6.QtWidgets import (
     QLabel, QDoubleSpinBox, QSpinBox, QGroupBox,
 )
 
-from backend.config import load_config, save_config
+from backend.config import load_config, save_config, save_config_preset, load_config_preset
+from ui.app_state import get_state
 
 
 class PacePage(QWidget):
@@ -14,13 +15,24 @@ class PacePage(QWidget):
 
     def _init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
+        layout.setSpacing(14)
+        layout.setContentsMargins(18, 18, 18, 18)
+
+        # Header
+        top = QHBoxLayout()
+        self.back_btn = QPushButton("← 返回")
+        self.back_btn.setObjectName("backBtn")
+        top.addWidget(self.back_btn)
+        top.addStretch()
+        layout.addLayout(top)
 
         title = QLabel("配速跑道")
-        title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        title.setObjectName("pageTitle")
         layout.addWidget(title)
 
+        # Config form
         form = QFormLayout()
+        form.setSpacing(10)
 
         self.pace_spin = QDoubleSpinBox()
         self.pace_spin.setRange(2.0, 15.0)
@@ -44,25 +56,31 @@ class PacePage(QWidget):
 
         layout.addLayout(form)
 
+        # Start button
         ctrl = QHBoxLayout()
         self.start_btn = QPushButton("开始运行")
+        self.start_btn.setObjectName("primaryBtn")
         self.start_btn.clicked.connect(self._on_start)
         ctrl.addWidget(self.start_btn)
-
-        self.back_btn = QPushButton("返回")
-        ctrl.addWidget(self.back_btn)
         ctrl.addStretch()
         layout.addLayout(ctrl)
 
         layout.addStretch()
 
     def _load_config(self):
-        cfg = load_config()
+        state = get_state()
+        if state.active_config_preset:
+            cfg = load_config_preset(state.active_config_preset)
+        else:
+            cfg = load_config()
         rw = cfg.get("random_walk", {})
         self.pace_spin.setValue(rw.get("pace_min_per_km", 5.0))
         self.duration_spin.setValue(rw.get("duration_seconds", 1800))
         self.jitter_spin.setValue(cfg.get("jitter_meters", 1.0))
         self._config = cfg
+
+    def reload_config(self):
+        self._load_config()
 
     def _on_start(self):
         rw = self._config.get("random_walk", {})
@@ -77,7 +95,12 @@ class PacePage(QWidget):
         rw = cfg.setdefault("random_walk", {})
         rw["pace_min_per_km"] = self.pace_spin.value()
         rw["duration_seconds"] = self.duration_spin.value()
-        save_config(cfg)
+
+        state = get_state()
+        if state.active_config_preset:
+            save_config_preset(state.active_config_preset, cfg)
+        else:
+            save_config(cfg)
 
         run_config = {
             "mode": "pace",

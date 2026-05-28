@@ -5,6 +5,7 @@ import json
 import sys
 
 from .config import CONFIG_FILE
+from .device_models import DEVICE_MODELS
 
 
 async def connect_via_tunneld(udid=None, save_choice=True):
@@ -53,11 +54,24 @@ async def connect_via_tunneld(udid=None, save_choice=True):
 def format_device_info(d):
     """提取设备可读信息"""
     p = d.peer_info["Properties"]
+    pt = p["ProductType"]
+    # device name: peer_info doesn't have it, try all_values (RSD lockdown cache)
+    name = p.get("DeviceName")
+    if not name:
+        try:
+            all_vals = d.all_values
+            if isinstance(all_vals, dict):
+                name = all_vals.get("DeviceName")
+        except Exception:
+            pass
+    if not name:
+        name = p.get("DeviceClass") or pt
     return {
         "udid": p["UniqueDeviceID"],
-        "product_type": p["ProductType"],
+        "product_type": pt,
+        "model_name": DEVICE_MODELS.get(pt, pt),
         "os_version": p["OSVersion"],
-        "name": p.get("DeviceName", "Unknown"),
+        "name": name,
     }
 
 

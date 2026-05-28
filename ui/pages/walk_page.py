@@ -3,7 +3,8 @@ from PySide6.QtWidgets import (
     QLabel, QDoubleSpinBox, QSpinBox, QGroupBox, QMessageBox,
 )
 
-from backend.config import load_config, save_config
+from backend.config import load_config, save_config, save_config_preset, load_config_preset
+from ui.app_state import get_state
 
 
 class WalkPage(QWidget):
@@ -14,13 +15,22 @@ class WalkPage(QWidget):
 
     def _init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
+        layout.setSpacing(14)
+        layout.setContentsMargins(18, 18, 18, 18)
+
+        top = QHBoxLayout()
+        self.back_btn = QPushButton("← 返回")
+        self.back_btn.setObjectName("backBtn")
+        top.addWidget(self.back_btn)
+        top.addStretch()
+        layout.addLayout(top)
 
         title = QLabel("随机游走")
-        title.setStyleSheet("font-size: 16px; font-weight: bold;")
+        title.setObjectName("pageTitle")
         layout.addWidget(title)
 
         form = QFormLayout()
+        form.setSpacing(10)
 
         self.speed_spin = QDoubleSpinBox()
         self.speed_spin.setRange(0.5, 20.0)
@@ -53,24 +63,29 @@ class WalkPage(QWidget):
 
         ctrl = QHBoxLayout()
         self.start_btn = QPushButton("开始运行")
+        self.start_btn.setObjectName("primaryBtn")
         self.start_btn.clicked.connect(self._on_start)
         ctrl.addWidget(self.start_btn)
-
-        self.back_btn = QPushButton("返回")
-        ctrl.addWidget(self.back_btn)
         ctrl.addStretch()
         layout.addLayout(ctrl)
 
         layout.addStretch()
 
     def _load_config(self):
-        cfg = load_config()
+        state = get_state()
+        if state.active_config_preset:
+            cfg = load_config_preset(state.active_config_preset)
+        else:
+            cfg = load_config()
         rw = cfg.get("random_walk", {})
         self.speed_spin.setValue(rw.get("speed_ms", 3.0))
         self.duration_spin.setValue(rw.get("duration_seconds", 1800))
         self.jitter_spin.setValue(cfg.get("jitter_meters", 3.0))
         self.dir_spin.setValue(rw.get("direction_change_stddev", 5.0))
         self._config = cfg
+
+    def reload_config(self):
+        self._load_config()
 
     def _on_start(self):
         rw = self._config.get("random_walk", {})
@@ -85,7 +100,12 @@ class WalkPage(QWidget):
         rw["speed_ms"] = self.speed_spin.value()
         rw["duration_seconds"] = self.duration_spin.value()
         rw["direction_change_stddev"] = self.dir_spin.value()
-        save_config(cfg)
+
+        state = get_state()
+        if state.active_config_preset:
+            save_config_preset(state.active_config_preset, cfg)
+        else:
+            save_config(cfg)
 
         speed = self.speed_spin.value()
         run_config = {

@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GeoPilot 使用教程</title>
+<style>
+  :root {
+    --bg: #F8FAFC;
+    --card: #FFFFFF;
+    --border: #E2E8F0;
+    --text: #0F172A;
+    --text2: #475569;
+    --text3: #94A3B8;
+    --accent: #2563EB;
+    --accent-light: #EFF6FF;
+    --success: #22C55E;
+    --warning: #F59E0B;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.75;
+    padding: 40px 20px 80px;
+  }
+  .container { max-width: 860px; margin: 0 auto; }
+  h1 {
+    font-size: 32px; font-weight: 700; margin-bottom: 8px;
+    background: linear-gradient(135deg, #2563EB, #7C3AED);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .subtitle { color: var(--text2); font-size: 16px; margin-bottom: 36px; }
+  h2 {
+    font-size: 22px; font-weight: 700; margin: 48px 0 16px;
+    padding-bottom: 8px; border-bottom: 2px solid var(--border);
+  }
+  h3 { font-size: 17px; font-weight: 600; margin: 28px 0 10px; color: var(--text2); }
+  p { margin-bottom: 12px; color: var(--text2); }
+  .card {
+    background: var(--card); border: 1px solid var(--border);
+    border-radius: 10px; padding: 24px; margin: 16px 0;
+  }
+  .card h3 { margin-top: 0; color: var(--text); }
+  ol, ul { padding-left: 22px; margin-bottom: 12px; color: var(--text2); }
+  li { margin-bottom: 6px; }
+  code {
+    background: #F1F5F9; padding: 2px 7px; border-radius: 4px;
+    font-family: "Cascadia Code", "Consolas", monospace; font-size: 13px;
+    color: #2563EB;
+  }
+  pre {
+    background: #0F172A; color: #E2E8F0; padding: 16px 20px;
+    border-radius: 8px; overflow-x: auto; font-size: 13px;
+    line-height: 1.6; margin: 12px 0;
+  }
+  .tip {
+    background: var(--accent-light); border-left: 4px solid var(--accent);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+    color: #1E40AF; font-size: 14px;
+  }
+  .warn {
+    background: #FFFBEB; border-left: 4px solid var(--warning);
+    padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0;
+    color: #92400E; font-size: 14px;
+  }
+  .step {
+    display: flex; align-items: flex-start; gap: 14px; margin: 14px 0;
+  }
+  .step-num {
+    background: var(--accent); color: #FFF; width: 28px; height: 28px;
+    border-radius: 50%; display: flex; align-items: center;
+    justify-content: center; font-size: 14px; font-weight: 700;
+    flex-shrink: 0; margin-top: 2px;
+  }
+  .kbd {
+    display: inline-block; background: #FFF; border: 1px solid var(--border);
+    border-radius: 5px; padding: 2px 8px; font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 13px; box-shadow: 0 1px 2px rgba(0,0,0,0.06);
+  }
+  .toc { column-count: 2; column-gap: 24px; }
+  .toc a { display: block; padding: 4px 0; color: var(--accent); text-decoration: none; font-size: 14px; }
+  .toc a:hover { text-decoration: underline; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 14px; }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; color: var(--text); background: #F8FAFC; }
+  td { color: var(--text2); }
+  .footer { margin-top: 64px; padding-top: 24px; border-top: 1px solid var(--border); color: var(--text3); font-size: 13px; }
+  @media (max-width: 640px) { .toc { column-count: 1; } }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+<h1>GeoPilot 使用教程</h1>
+<p class="subtitle">iOS 虚拟定位桌面工具 — 连接 iPhone/iPad，实时模拟 GPS 位置</p>
+
+<div class="card">
+  <h3>目录</h3>
+  <div class="toc">
+    <a href="#ch1">1. 环境准备</a>
+    <a href="#ch2">2. 启动与连接设备</a>
+    <a href="#ch3">3. 场地配置</a>
+    <a href="#ch4">4. 矩形校准</a>
+    <a href="#ch5">5. 配速跑道</a>
+    <a href="#ch6">6. 随机游走</a>
+    <a href="#ch7">7. 路线回放</a>
+    <a href="#ch8">8. 配置管理</a>
+    <a href="#ch9">9. 开发者模式</a>
+    <a href="#ch10">10. 构建与部署</a>
+    <a href="#ch11">11. 常见问题</a>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch1">1. 环境准备</h2>
+
+<h3>系统要求</h3>
+<ul>
+  <li>Windows 10 / 11 x64</li>
+  <li>Python 3.11 或更高版本（仅开发模式需要）</li>
+  <li>iTunes 或 <a href="https://support.apple.com/zh-cn/106401" target="_blank">Apple 设备 USB 驱动</a></li>
+</ul>
+
+<h3>安装依赖（开发模式）</h3>
+<pre>pip install -r requirements.txt</pre>
+
+<h3>首次使用检查清单</h3>
+<ol>
+  <li>iPhone/iPad 已通过 USB 连接到电脑</li>
+  <li>设备已解锁，点击「信任此电脑」</li>
+  <li>设备已开启开发者模式（设置 → 隐私与安全性 → 开发者模式）</li>
+  <li>电脑有管理员权限（tunneld 需要创建虚拟网卡）</li>
+</ol>
+
+<div class="warn">
+  <strong>注意：</strong>首次连接设备时，iOS 会弹出"信任此电脑"对话框，必须点击「信任」才能继续。
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch2">2. 启动与连接设备</h2>
+
+<div class="step"><div class="step-num">1</div><div>运行 <code>python app.py</code>（开发模式）或双击 <code>GeoPilot.exe</code>（打包版本）。</div></div>
+
+<div class="step"><div class="step-num">2</div><div>程序会自动检测 tunneld 是否运行。如果未运行，会弹出提示框询问是否启动。点击「确定」后弹出 UAC 提权窗口，点击「是」授权。</div></div>
+
+<div class="step"><div class="step-num">3</div><div>tunneld 启动后，首页状态卡的「Tunneld」指示灯变为绿色。</div></div>
+
+<div class="step"><div class="step-num">4</div><div>点击「刷新设备」，GeoPilot 扫描连接到电脑的 iOS 设备。发现的设备出现在设备列表中。</div></div>
+
+<div class="step"><div class="step-num">5</div><div>在设备列表中勾选需要控制的设备（支持多选），然后点击「连接选中」。</div></div>
+
+<div class="step"><div class="step-num">6</div><div>连接成功后，「设备」状态卡显示已发现和已选中的设备数量，指示灯变为绿色。底部的四个模式按钮变为可用状态。</div></div>
+
+<div class="tip">
+  <strong>提示：</strong>支持同时连接多台设备，勾选哪台就控制哪台。设备列表上方有「全选」复选框，可以一键选中/取消所有设备。
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch3">3. 场地配置</h2>
+
+<p>场地配置定义了矩形区域的四角 GPS 坐标。所有运行模式（配速跑道、随机游走、路线回放）都需要在指定的矩形区域内运行。</p>
+
+<h3>切换场地</h3>
+<p>在首页的「当前场地」下拉框中，选择已保存的场地预设。选项包括：</p>
+<ul>
+  <li><strong>config.json (默认)</strong> — 主配置文件中的场地</li>
+  <li><strong>自定义预设</strong> — 保存在 <code>configs/</code> 目录下的 JSON 文件</li>
+</ul>
+
+<h3>导入场地配置</h3>
+<p>进入「设置」→「配置管理」，点击「导入场地」，选择一个 JSON 配置文件。如果文件名与已有预设冲突，会提示你重新命名。导入后自动切换为该预设。</p>
+
+<h3>导出场地配置</h3>
+<p>在设置页面点击「导出场地」，将当前配置保存为 JSON 文件。</p>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch4">4. 矩形校准</h2>
+
+<p>矩形校准是最关键的操作。你需要操控设备的 GPS 位置走到实际场地的四个角，系统保存坐标后生成矩形区域。</p>
+
+<div class="step"><div class="step-num">1</div><div>连接设备后，在首页点击「矩形校准」按钮进入校准页面。</div></div>
+
+<div class="step"><div class="step-num">2</div><div>点击「开始校准」。设备 GPS 自动跳转到默认起始位置（西北角）。</div></div>
+
+<div class="step"><div class="step-num">3</div><div>使用 <span class="kbd">W</span> <span class="kbd">A</span> <span class="kbd">S</span> <span class="kbd">D</span> 键或界面上的方向按钮微调位置，直到走到西北角的准确位置。</div></div>
+
+<table>
+  <tr><th>按键</th><th>方向</th><th>效果</th></tr>
+  <tr><td><span class="kbd">W</span></td><td>北 ↑</td><td>纬度增加</td></tr>
+  <tr><td><span class="kbd">S</span></td><td>南 ↓</td><td>纬度减少</td></tr>
+  <tr><td><span class="kbd">A</span></td><td>西 ←</td><td>经度减少</td></tr>
+  <tr><td><span class="kbd">D</span></td><td>东 →</td><td>经度增加</td></tr>
+</table>
+
+<div class="step"><div class="step-num">4</div><div>通过 <span class="kbd">+</span> / <span class="kbd">-</span> 按钮调整步长（1-100 米）。</div></div>
+
+<div class="step"><div class="step-num">5</div><div>到达准确位置后，点击「确认此角」。该角标记为已确认（绿色对勾），位置从上一个确认的角自动衔接，无需回到原点重来。</div></div>
+
+<div class="step"><div class="step-num">6</div><div>按顺序完成 NW → NE → SE → SW 四个角后，弹出保存对话框：</div></div>
+
+<ul>
+  <li><strong>保存到当前配置</strong> — 写入当前激活的配置文件</li>
+  <li><strong>另存为新预设</strong> — 创建新的场地预设文件，并自动切换为当前使用</li>
+  <li><strong>放弃</strong> — 丢弃本次校准结果</li>
+</ul>
+
+<div class="tip">
+  <strong>技巧：</strong>步长设为 100m 可以快速移动，接近目标后逐步减小步长到 5m 或 1m 进行精确微调。
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch5">5. 配速跑道</h2>
+
+<p>在矩形区域内生成椭圆形跑道，按指定配速模拟跑步运动。适合模拟操场跑步、马拉松训练等场景。</p>
+
+<h3>参数说明</h3>
+<table>
+  <tr><th>参数</th><th>范围</th><th>说明</th></tr>
+  <tr><td>配速</td><td>2.0 - 15.0 min/km</td><td>每公里用时，数值越小跑得越快</td></tr>
+  <tr><td>时长</td><td>60 - 36000 秒</td><td>模拟运行的总时长</td></tr>
+  <tr><td>抖动</td><td>0 - 20 米</td><td>GPS 位置随机偏移，模拟真实定位误差</td></tr>
+</table>
+
+<div class="tip">
+  <strong>提示：</strong>跑道会自动适应矩形区域。如果矩形宽大于高，跑道沿水平方向伸展；反之沿垂直方向。跑道大小还会在每圈随机变化（60%-100%），增加真实感。
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch6">6. 随机游走</h2>
+
+<p>在矩形区域内模拟随机移动路径，碰到边界后反弹。适合模拟行人逛街、散步等场景。</p>
+
+<h3>参数说明</h3>
+<table>
+  <tr><th>参数</th><th>范围</th><th>说明</th></tr>
+  <tr><td>速度</td><td>0.5 - 20.0 m/s</td><td>移动速度</td></tr>
+  <tr><td>时长</td><td>60 - 36000 秒</td><td>模拟运行的总时长</td></tr>
+  <tr><td>抖动</td><td>0 - 20 米</td><td>GPS 位置随机偏移</td></tr>
+  <tr><td>方向变化</td><td>0.5 - 45.0 deg</td><td>方向变化的标准差，值越大路径越随机</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch7">7. 路线回放</h2>
+
+<p>导入 GPX 或 JSON 格式的路线文件，按路径点顺序回放移动轨迹。适合模拟沿特定路线跑步、骑行等场景。</p>
+
+<h3>支持的路线格式</h3>
+<ul>
+  <li><strong>JSON</strong> — 包含 <code>route_name</code> 和 <code>coordinates</code> 数组的 JSON 文件</li>
+  <li><strong>GPX</strong> — 标准 GPX 格式，使用 <code>python import_gpx.py</code> 转换为内部格式</li>
+</ul>
+
+<h3>参数说明</h3>
+<table>
+  <tr><th>参数</th><th>范围</th><th>说明</th></tr>
+  <tr><td>循环圈数</td><td>1 - 9999</td><td>路线重复播放的次数</td></tr>
+</table>
+
+<h3>导入 GPX 路线</h3>
+<pre>python import_gpx.py path/to/route.gpx --output routes/my_route.json</pre>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch8">8. 配置管理</h2>
+
+<p>所有配置参数都可以在「设置」页面统一管理。设置页面的「配置管理」区域位于最顶部，提供完整的预设管理功能。</p>
+
+<h3>预设列表</h3>
+<p>显示所有可用的场地预设。点击列表中的预设名称即可切换为当前使用。</p>
+
+<h3>按钮说明</h3>
+<table>
+  <tr><th>按钮</th><th>功能</th></tr>
+  <tr><td>导入场地</td><td>从外部 JSON 文件导入为新的场地预设</td></tr>
+  <tr><td>导出场地</td><td>将当前配置导出为 JSON 文件</td></tr>
+  <tr><td>删除选中</td><td>删除在列表中选中的预设</td></tr>
+  <tr><td>保存当前配置</td><td>保存所有参数到当前激活的配置文件</td></tr>
+  <tr><td>另存为预设</td><td>将当前参数保存为新的场地预设</td></tr>
+  <tr><td>恢复默认</td><td>将所有参数恢复为出厂默认值</td></tr>
+</table>
+
+<h3>通用设置</h3>
+<table>
+  <tr><th>参数</th><th>说明</th></tr>
+  <tr><td>定位间隔</td><td>每次 GPS 更新之间的间隔（秒）</td></tr>
+  <tr><td>抖动范围</td><td>全局 GPS 抖动幅度（米）</td></tr>
+  <tr><td>中点概率</td><td>在路径点之间插入中点的概率</td></tr>
+  <tr><td>默认圈数</td><td>路线回放的默认循环圈数</td></tr>
+</table>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch9">9. 开发者模式</h2>
+
+<p>iOS 16+ 设备需要开启开发者模式才能使用虚拟定位功能。设置页面提供三个操作：</p>
+
+<ol>
+  <li><strong>检查状态</strong> — 查询当前设备是否已开启开发者模式</li>
+  <li><strong>显示开发者选项</strong> — 让开发者模式开关出现在设备设置中（<strong>不会重启</strong>），然后手动前往 设置 → 隐私与安全性 → 开发者模式 开启</li>
+  <li><strong>完全激活</strong> — 直接激活开发者模式（<strong>设备会重启</strong>，需确保设备没有锁屏密码）</li>
+</ol>
+
+<div class="warn">
+  <strong>警告：</strong>「完全激活」会导致设备重启，请确保设备没有设置锁屏密码，否则重启后可能无法自动解锁。
+</div>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch10">10. 构建与部署</h2>
+
+<h3>开发模式运行</h3>
+<pre>python app.py</pre>
+
+<h3>CLI 模式（遗留）</h3>
+<pre>python main.py --mode pace --duration 1800 --udid &lt;设备UDID&gt;</pre>
+
+<h3>手动启动 tunneld</h3>
+<pre>python -m pymobiledevice3 remote tunneld</pre>
+
+<h3>打包为可执行文件</h3>
+<pre>pyinstaller geosim.spec --clean --noconfirm</pre>
+
+<p>输出目录：<code>dist/GeoPilot/</code></p>
+
+<h3>创建安装包</h3>
+<pre>build.bat</pre>
+
+<p>生成三个分发文件：</p>
+<ul>
+  <li><code>dist/GeoPilot/</code> — 绿色免安装版</li>
+  <li><code>dist/GeoPilot_portable.zip</code> — 便携版压缩包</li>
+  <li><code>dist/GeoPilot_setup.exe</code> — SFX 安装包</li>
+</ul>
+
+<!-- ═══════════════════════════════════════════════════════ -->
+<h2 id="ch11">11. 常见问题</h2>
+
+<div class="card">
+<h3>Q: tunneld 启动失败或端口被占用？</h3>
+<p>端口 49151 可能被其他进程占用。运行以下命令查找并终止占用进程：</p>
+<pre>netstat -ano | findstr 49151
+taskkill /PID &lt;进程ID&gt; /F</pre>
+</div>
+
+<div class="card">
+<h3>Q: 设备列表中看不到我的 iPhone/iPad？</h3>
+<ol>
+  <li>确认 USB 数据线支持数据传输（不是仅充电线）</li>
+  <li>确认设备已解锁并点击了「信任此电脑」</li>
+  <li>确认 iTunes 或 Apple USB 驱动已安装</li>
+  <li>点击「刷新设备」重新扫描</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Q: 虚拟定位不生效？</h3>
+<ol>
+  <li>确认设备已开启开发者模式</li>
+  <li>确认「设置 → 隐私与安全性 → 开发者模式」已打开</li>
+  <li>检查是否有其他定位模拟工具在运行（Xcode 等）</li>
+  <li>在设备上打开地图应用验证位置</li>
+</ol>
+</div>
+
+<div class="card">
+<h3>Q: 校准后跑道/游走提示"未设置矩形区域"？</h3>
+<p>校准完成后需要在保存对话框中选择「保存到当前配置」或「另存为新预设」，仅点击「放弃」不会保存。</p>
+</div>
+
+<div class="card">
+<h3>Q: 导入的场地配置为什么没有生效？</h3>
+<p>导入场地配置后会自动切换为该预设。如果其他页面没有更新，切换到对应页面时会自动重新加载配置。如果仍不生效，请检查预设文件是否包含完整的 <code>random_walk.corners</code> 字段。</p>
+</div>
+
+<div class="card">
+<h3>Q: 打包后的程序在干净虚拟机上运行报错？</h3>
+<p>最常见的原因是缺少 <code>wintun.dll</code> 或 Python 模块未完全打包。确认 <code>geosim.spec</code> 中包含了 wintun.dll 和所有 hiddenimports。如果仍有问题，查看 <code>build/geosim/warn-geosim.txt</code> 中的缺失模块警告。</p>
+</div>
+
+<div class="footer">
+  <p>GeoPilot — 内部工具，仅供开发测试使用。</p>
+</div>
+
+</div>
+</body>
+</html>

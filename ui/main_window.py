@@ -1,7 +1,5 @@
 from PySide6.QtWidgets import QMainWindow, QWidget, QVBoxLayout, QStackedWidget
-from PySide6.QtGui import QAction
 
-from ui.widgets.status_bar import StatusBar
 from ui.pages.home_page import HomePage
 from ui.pages.pace_page import PacePage
 from ui.pages.walk_page import WalkPage
@@ -27,16 +25,15 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.setWindowTitle("GeoPilot")
-        self.resize(720, 560)
+        self.resize(1000, 650)
+        self.setMinimumSize(860, 540)
 
         central = QWidget()
+        central.setObjectName("centralWidget")
         self.setCentralWidget(central)
         layout = QVBoxLayout(central)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(0)
-
-        self.status_bar = StatusBar()
-        layout.addWidget(self.status_bar)
 
         self.stack = QStackedWidget()
         layout.addWidget(self.stack)
@@ -80,22 +77,32 @@ class MainWindow(QMainWindow):
         self.log_page.back_btn.clicked.connect(lambda: self.navigate(PAGE_HOME))
         self.stack.addWidget(self.log_page)
 
-        # ---- wire home page mode cards ----
+        # ---- wire home page ----
         self.home_page.pace_btn.clicked.connect(lambda: self.navigate(PAGE_PACE))
         self.home_page.walk_btn.clicked.connect(lambda: self.navigate(PAGE_WALK))
         self.home_page.route_btn.clicked.connect(lambda: self.navigate(PAGE_ROUTE))
         self.home_page.calibrate_btn.clicked.connect(lambda: self.navigate(PAGE_CALIBRATE))
+        self.home_page.settings_btn.clicked.connect(lambda: self.navigate(PAGE_SETTINGS))
+        self.home_page.log_btn.clicked.connect(lambda: self.navigate(PAGE_LOG))
 
         # ---- signals ----
         self.home_page.device_connected.connect(self._on_device_connected)
 
         # initial tunneld check
         from ui.tunneld_manager import TunneldManager
-        self.status_bar.set_tunneld_status(TunneldManager.is_running())
+        self.home_page.update_tunneld_status(TunneldManager.is_running())
 
     def navigate(self, page_index: int):
         if page_index < self.stack.count():
             self.stack.setCurrentIndex(page_index)
+        if page_index == PAGE_PACE:
+            self.pace_page.reload_config()
+        elif page_index == PAGE_WALK:
+            self.walk_page.reload_config()
+        elif page_index == PAGE_ROUTE:
+            self.route_page.reload_config()
+        elif page_index == PAGE_SETTINGS:
+            self.settings_page._load()
 
     def start_run(self, run_config: dict):
         self.run_page.set_run_config(run_config)
@@ -108,9 +115,5 @@ class MainWindow(QMainWindow):
         self.navigate(PAGE_HOME)
 
     def _on_device_connected(self, _rsd):
-        state = get_state()
-        info = state.connected_device_info
-        self.status_bar.set_device_info(
-            f"{info['product_type']} (iOS {info['os_version']})"
-        )
-        self.status_bar.set_tunneld_status(True)
+        self.home_page._update_device_counts()
+        self.home_page.update_tunneld_status(True)

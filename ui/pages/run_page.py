@@ -1,6 +1,3 @@
-import asyncio
-from functools import partial
-
 from PySide6.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton,
     QLabel, QProgressBar, QTextEdit, QGroupBox,
@@ -27,13 +24,15 @@ class RunPage(QWidget):
 
     def _init_ui(self):
         layout = QVBoxLayout(self)
-        layout.setSpacing(12)
+        layout.setSpacing(14)
+        layout.setContentsMargins(18, 18, 18, 18)
 
         self.mode_label = QLabel()
-        self.mode_label.setStyleSheet("font-size: 16px; font-weight: bold;")
+        self.mode_label.setObjectName("pageTitle")
         layout.addWidget(self.mode_label)
 
         self.stats_label = QLabel("就绪")
+        self.stats_label.setObjectName("bodyLabel")
         layout.addWidget(self.stats_label)
 
         self.progress_bar = QProgressBar()
@@ -41,7 +40,9 @@ class RunPage(QWidget):
         layout.addWidget(self.progress_bar)
 
         ctrl = QHBoxLayout()
+        ctrl.setSpacing(8)
         self.start_btn = QPushButton("开始")
+        self.start_btn.setObjectName("primaryBtn")
         self.start_btn.clicked.connect(self._on_start)
         ctrl.addWidget(self.start_btn)
 
@@ -51,6 +52,7 @@ class RunPage(QWidget):
         ctrl.addWidget(self.stop_btn)
 
         self.back_btn = QPushButton("返回")
+        self.back_btn.setObjectName("backBtn")
         self.back_btn.clicked.connect(lambda: self.back_requested.emit())
         ctrl.addWidget(self.back_btn)
         ctrl.addStretch()
@@ -93,12 +95,12 @@ class RunPage(QWidget):
 
     def _on_start(self):
         state = get_state()
-        if state.rsd is None:
+        if not state.rsd_list:
             self._append_log("[ERROR] 未连接设备")
             return
 
         gen = self._create_generator()
-        self._controller.start(state.rsd, gen)
+        self._controller.start(state.rsd_list, gen)
 
         self.start_btn.setEnabled(False)
         self.stop_btn.setEnabled(True)
@@ -123,9 +125,10 @@ class RunPage(QWidget):
         lat, lng = data["lat"], data["lng"]
         tick, dist = data["tick"], data["dist"]
         elapsed = data["elapsed"]
+        ndev = data.get("devices", 1)
 
         self.stats_label.setText(
-            f"tick={tick}  |  {dist:.0f}m  |  {elapsed:.0f}s  |  ({lat:.8f}, {lng:.8f})"
+            f"{ndev}台设备  |  tick={tick}  |  {dist:.0f}m  |  {elapsed:.0f}s  |  ({lat:.8f}, {lng:.8f})"
         )
         if self.progress_bar.isVisible():
             self.progress_bar.setValue(int(elapsed))
