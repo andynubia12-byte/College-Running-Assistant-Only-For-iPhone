@@ -108,7 +108,7 @@ pyinstaller geosim.spec --clean --noconfirm
 
 内部工具，仅供开发测试使用。
 
-##一些话
+## 一些话
 
 - 该软件使用还是过于复杂，有时间的话会进行后续优化。
 - 本软件使用 Claude Code 接入 DeepSeek V4 Pro 进行开发
